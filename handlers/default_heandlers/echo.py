@@ -1,9 +1,11 @@
 from telebot.types import Message
 from loader import bot
+from loguru import logger
 
 
-# Эхо хендлер, куда летят текстовые сообщения без указанного состояния
-# @bot.message_handler(state=None)
+@bot.message_handler(commands=[None], func=lambda message: not bot.get_state(message.from_user.id))
 def bot_echo(message: Message):
-    bot.reply_to(message, "Эхо без состояния или фильтра.\nСообщение:"
-                          f"{message.text}")
+    # Обработчик сообщений от пользователя без заданного состояния
+    logger.debug("User {} in state={} sent message '{}'",
+                   message.from_user.id, bot.get_state(message.from_user.id), message.text)
+    bot.send_message(message.from_user.id, "Справка по командам бота: /help")

@@ -1,5 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+
 def location_choice(loc_list: list) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
     for item in loc_list:

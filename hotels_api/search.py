@@ -1,6 +1,12 @@
 import re
 from hotels_api.api_request import api_request
 from loader import bot
+from loguru import logger
+import json
+
+
+class ApiBadResponse(Exception):
+    pass
 
 
 def city_id(city: str) -> list:
@@ -13,10 +19,11 @@ def city_id(city: str) -> list:
     api_url = 'https://hotels4.p.rapidapi.com/locations/v2/search'
     querystring = {'query': city, 'locale': 'ru_RU', 'currency': 'USD'}
     result = api_request(api_url=api_url, querystring=querystring)
-    locations = result['suggestions'][0]['entities']
     found_loc = list()
+    if not result:
+        return found_loc
+    locations = result['suggestions'][0]['entities']
     for item in locations:
-        # if item['type'] == 'CITY' and (item['name'].lower() in city):
         if item['type'] == 'CITY':
             # Очистка строки от тегов
             caption = re.sub(r'<.*?(>)|(>[.,])', '', item['caption'])
@@ -69,7 +76,8 @@ def find_hotels(user_id: int) -> list:
     """
     Функция выполняет поисковый запрос в соответствии с заданными параметрами
     и возвращает список результатов
-    :return: None
+    :param user_id: (int) user-ID пользователя телеграм, который сделал запрос
+    :return: (list) список найденных отелей
     """
     dist_max = 0
     with bot.retrieve_data(user_id) as data:
@@ -91,13 +99,13 @@ def find_hotels(user_id: int) -> list:
 
     api_url = 'https://hotels4.p.rapidapi.com/properties/list'
     result = api_request(api_url=api_url, querystring=querystring)
+
     if not result:
-        raise BaseException
+        logger.warning("API returned None")
+        raise ApiBadResponse("Возникла проблема на сервере. Попробуйте повторить запрос.")
 
     loc_name = result['data']['body'].get('header')
     hotels_list = result['data']['body']['searchResults']['results']
-    if len(hotels_list) == 0:
-        raise BaseException
 
     search_results = list()
     for elem in hotels_list:
