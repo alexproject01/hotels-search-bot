@@ -24,7 +24,7 @@ def city_id(city: str) -> list:
         return found_loc
     locations = result['suggestions'][0]['entities']
     for item in locations:
-        if item['type'] == 'CITY':
+        if item:
             # Очистка строки от тегов
             caption = re.sub(r'<.*?(>)|(>[.,])', '', item['caption'])
             caption = re.sub(r'<.*?(>)|(>[.,])', '', caption)
