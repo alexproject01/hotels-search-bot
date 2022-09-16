@@ -1,6 +1,7 @@
 from telebot.types import Message
-from loader import bot
 from loguru import logger
+
+from loader import bot
 
 
 @bot.message_handler(commands=[None], func=lambda message: not bot.get_state(message.from_user.id))

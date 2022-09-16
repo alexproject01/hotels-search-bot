@@ -1,11 +1,13 @@
+from time import sleep
+from sqlite3 import OperationalError
+
+from loguru import logger
+from telebot.types import Message, InputMediaPhoto
+
 from loader import bot
 from states.search_params import UserParamState
-from telebot.types import Message, InputMediaPhoto
 from keyboards.reply.history_next_result import history_next
 from database.data_base import db_read
-from loguru import logger
-from sqlite3 import OperationalError
-from time import sleep
 
 
 @bot.message_handler(commands=['history'])
@@ -26,9 +28,8 @@ def next_search(message: Message) -> None:
             result = db_read(message.from_user.id)
             logger.debug("Next results from history displayed for User {}", message.from_user.id)
             bot.send_message(message.from_user.id, result[0])
-            sleep(1)
             for entry in result[1]:
-                sleep(0.2)
+                sleep(0.5)
                 bot.send_message(message.from_user.id, f'{entry[0]}', disable_web_page_preview=True)
                 if entry[1] != '':
                     pics = entry[1].split()
@@ -38,7 +39,7 @@ def next_search(message: Message) -> None:
                 if data['history'][0] < data['history'][1]:
                     bot.send_message(message.from_user.id,
                                      'Показать следующие результаты?', reply_markup=history_next())
-                    sleep(2)
+                    sleep(1)
                 else:
                     logger.debug("User {} reached the end of history", message.from_user.id)
                     bot.send_message(message.from_user.id, 'Вы просмотрели всю сохраненную историю поиска \U00002705')

@@ -1,9 +1,11 @@
-from loader import bot
-import handlers
 from telebot.custom_filters import StateFilter
 from telebot.apihelper import ApiTelegramException
-from utils.set_bot_commands import set_default_commands
 from loguru import logger
+
+from loader import bot
+import handlers
+from utils.set_bot_commands import set_default_commands
+
 
 if __name__ == '__main__':
     logger.info("Starting bot")

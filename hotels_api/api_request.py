@@ -1,8 +1,10 @@
 import json
-import requests
-from config_data import config
 import re
+
+import requests
 from loguru import logger
+
+from config_data import config
 
 
 def api_request(api_url: str, querystring: dict) -> dict:

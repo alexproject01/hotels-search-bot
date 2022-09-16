@@ -1,15 +1,18 @@
+from datetime import date, timedelta
+from time import sleep
+
+from telebot.types import Message, InputMediaPhoto, CallbackQuery
+from telegram_bot_calendar import DetailedTelegramCalendar
+from loguru import logger
+
 from loader import bot
 from states.search_params import UserParamState
-from telebot.types import Message, InputMediaPhoto, CallbackQuery
 from keyboards.inline.locations_list import location_choice
 from keyboards.reply.guests import guests_amt_choice
 from keyboards.reply.results import results_amt_choice
 from keyboards.reply.photos import show_pics, pics_amt_choice
-from telegram_bot_calendar import DetailedTelegramCalendar
-from datetime import date, timedelta
 from hotels_api.search import city_id, find_hotels, ApiBadResponse
 from database.data_base import db_write
-from loguru import logger
 
 LSTEP = {'y': 'год', 'm': 'месяц', 'd': 'день'}
 
@@ -220,11 +223,13 @@ def get_results(user_id: int) -> None:
         logger.debug("{} results found", res_amt)
         if res_amt != 0:
             bot.send_message(user_id, f'Найдено отелей: {res_amt}')
+            sleep(1)
             for hotel in results:
                 bot.send_message(user_id, hotel.info, disable_web_page_preview=True)
                 if len(hotel.pics_list) != 0:
                     image_lst = [InputMediaPhoto(image) for image in hotel.pics_list]
                     bot.send_media_group(user_id, image_lst)
+                sleep(0.5)
             db_write(user_id=user_id, search_results=results)
         else:
             bot.send_message(user_id, "Подходящих отелей не найдено")
