@@ -1,8 +1,8 @@
 import re
+from loguru import logger
+
 from hotels_api.api_request import api_request
 from loader import bot
-from loguru import logger
-import json
 
 
 class ApiBadResponse(Exception):
